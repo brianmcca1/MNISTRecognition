@@ -57,14 +57,45 @@ i = 0
 while i < 10:
 	shuffle(imageClasses[i])
 	for index, numberImage in enumerate(imageClasses[i]):
-		if index < (0.6 * len(imageClasses[i])):
-			trainingSet.append(numberImage)
-		elif index < (0.75 * len(imageClasses[i])):
-			validationSet.append(numberImage)
-		else:
-			testSet.append(numberImage)
+		if numberImage != 0:
+			if index < (0.6 * len(imageClasses[i])):
+				trainingSet.append(numberImage)
+			elif index < (0.75 * len(imageClasses[i])):
+				validationSet.append(numberImage)
+			else:
+				testSet.append(numberImage)
 	i += 1
 
+print("Training Set:")
+for numberImage in trainingSet:
+	if(numberImage == 0):
+		print("ZERO")
+	else:
+		print(numberImage.label)
+
+print("Validation Set:")
+for numberImage in validationSet:
+	if(numberImage == 0):
+		print("ZERO")
+	else:
+		print(numberImage.label)
+
+print("Test set:")
+for numberImage in testSet:
+	if(numberImage == 0):
+		print("ZERO")
+	else:
+		print(numberImage.label)
+
+# Now that everything is organized, separate into separate objects
+trainingSetImages = []
+trainingSetLabels = []
+
+validationSetImages = []
+validationSetLabels = []
+
+testSetImages = []
+testSetLabels = []
 
 # Model Template
 
@@ -87,8 +118,8 @@ model.compile(optimizer='sgd',
               metrics=['accuracy'])
 
 # Train Model
-history = model.fit(x_train, y_train, 
-                    validation_data = (x_val, y_val), 
+history = model.fit(np.array(trainingSetImages), np.array(trainingSetLabels), 
+                    validation_data = (np.array(validationSetImages), np.array(validationSetLabels)), 
                     epochs=10, 
                     batch_size=512)
 
@@ -96,7 +127,9 @@ history = model.fit(x_train, y_train,
 # Report Results
 
 print(history.history)
-model.predict()
+
+# TODO: Convert this to a confusion matrix and print it
+model.predict(np.array(testSetImages), batch_size=512)
 
 
 
