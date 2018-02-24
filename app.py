@@ -11,6 +11,14 @@ class NumberImage:
 		self.image = image
 		self.label = label
 
+def getIntFromLabelArray(labelArray):
+	index = 0
+	for label in labelArray:
+		if label == 1:
+			return index
+		index += 1
+	return -1
+
 # PRE-PROCESSING
 
 # Load the .npy files using numpy
@@ -66,26 +74,6 @@ while i < 10:
 				testSet.append(numberImage)
 	i += 1
 
-print("Training Set:")
-for numberImage in trainingSet:
-	if(numberImage == 0):
-		print("ZERO")
-	else:
-		print(numberImage.label)
-
-print("Validation Set:")
-for numberImage in validationSet:
-	if(numberImage == 0):
-		print("ZERO")
-	else:
-		print(numberImage.label)
-
-print("Test set:")
-for numberImage in testSet:
-	if(numberImage == 0):
-		print("ZERO")
-	else:
-		print(numberImage.label)
 
 # Now that everything is organized, separate into separate objects
 trainingSetImages = []
@@ -97,6 +85,15 @@ validationSetLabels = []
 testSetImages = []
 testSetLabels = []
 
+for numberImage in trainingSet:
+	trainingSetImages.append(numberImage.image)
+	trainingSetLabels.append(numberImage.label)
+for numberImage in validationSet:
+	validationSetImages.append(numberImage.image)
+	validationSetLabels.append(numberImage.label)
+for numberImage in testSet:
+	testSetImages.append(numberImage.image)
+	testSetLabels.append(numberImage.label)
 # Model Template
 
 model = Sequential() # declare model
@@ -108,6 +105,12 @@ model.add(Activation('relu'))
 # Fill in Model Here
 #
 #
+model.add(Dense(30, input_shape=(28*28, ), kernel_initializer='he_uniform'))
+model.add(Activation('relu'))
+
+# model.add(Dense(10, input_shape=(28*28, ), kernel_initializer='he_uniform'))
+# model.add(Activation('relu'))
+
 model.add(Dense(10, kernel_initializer='he_normal')) # last layer
 model.add(Activation('softmax'))
 
@@ -120,7 +123,7 @@ model.compile(optimizer='sgd',
 # Train Model
 history = model.fit(np.array(trainingSetImages), np.array(trainingSetLabels), 
                     validation_data = (np.array(validationSetImages), np.array(validationSetLabels)), 
-                    epochs=10, 
+                    epochs=20, 
                     batch_size=512)
 
 
@@ -129,7 +132,29 @@ history = model.fit(np.array(trainingSetImages), np.array(trainingSetLabels),
 print(history.history)
 
 # TODO: Convert this to a confusion matrix and print it
-model.predict(np.array(testSetImages), batch_size=512)
+np.set_printoptions(precision=3)
+np.set_printoptions(suppress=True)
+np.set_printoptions(threshold=np.nan)
+prediction = model.predict(np.array(testSetImages), batch_size=512)
+
+# Construct the confusion matrix
+index = 0;
+confusionMatrix = np.empty(shape=[10, 10])
+for row in prediction:
+	max = 0;
+	maxIndex = 0;
+	columnIndex = 0;
+	for val in row:
+		if val > max:
+			max = val
+			maxIndex = columnIndex
+		columnIndex += 1
+	realVal = testSetLabels[index]
+	confusionMatrix[maxIndex, getIntFromLabelArray(realVal)] += 1
+	index += 1
+print("ANN CONFUSION MATRIX:")
+print(confusionMatrix)
+
 
 
 
