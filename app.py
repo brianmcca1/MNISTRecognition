@@ -97,7 +97,7 @@ for numberImage in testSet:
 # Model Template
 
 model = Sequential() # declare model
-model.add(Dense(10, input_shape=(28*28, ), kernel_initializer='he_normal')) # first layer
+model.add(Dense(256, input_shape=(28*28, ), kernel_initializer='lecun_uniform')) # first layer
 model.add(Activation('relu'))
 #
 #
@@ -105,11 +105,14 @@ model.add(Activation('relu'))
 # Fill in Model Here
 #
 #
-model.add(Dense(30, input_shape=(28*28, ), kernel_initializer='he_uniform'))
+model.add(Dense(128, kernel_initializer='lecun_uniform'))
 model.add(Activation('relu'))
 
-# model.add(Dense(10, input_shape=(28*28, ), kernel_initializer='he_uniform'))
-# model.add(Activation('relu'))
+model.add(Dense(64, kernel_initializer='lecun_uniform'))
+model.add(Activation('relu'))
+
+model.add(Dense(28, kernel_initializer='lecun_uniform'))
+model.add(Activation('relu'))
 
 model.add(Dense(10, kernel_initializer='he_normal')) # last layer
 model.add(Activation('softmax'))
@@ -123,8 +126,8 @@ model.compile(optimizer='sgd',
 # Train Model
 history = model.fit(np.array(trainingSetImages), np.array(trainingSetLabels), 
                     validation_data = (np.array(validationSetImages), np.array(validationSetLabels)), 
-                    epochs=20, 
-                    batch_size=512)
+                    epochs=60, 
+                    batch_size=256)
 
 
 # Report Results
@@ -135,11 +138,11 @@ print(history.history)
 np.set_printoptions(precision=3)
 np.set_printoptions(suppress=True)
 np.set_printoptions(threshold=np.nan)
-prediction = model.predict(np.array(testSetImages), batch_size=512)
+prediction = model.predict(np.array(testSetImages), batch_size=256)
 
 # Construct the confusion matrix
 index = 0;
-confusionMatrix = np.empty(shape=[10, 10])
+confusionMatrix = np.zeros(shape=[10, 10])
 for row in prediction:
 	max = 0;
 	maxIndex = 0;
