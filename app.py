@@ -97,22 +97,27 @@ for numberImage in testSet:
 # Model Template
 
 model = Sequential() # declare model
-model.add(Dense(256, input_shape=(28*28, ), kernel_initializer='lecun_uniform')) # first layer
-model.add(Activation('relu'))
+model.add(Dense(784, input_shape=(28*28, ), kernel_initializer='lecun_uniform')) # first layer
+model.add(Activation('tanh'))
 #
 #
 #
 # Fill in Model Here
 #
 #
+
+model.add(Dense(512, kernel_initializer='lecun_uniform'))
+model.add(Activation('tanh'))
+model.add(Dense(256, kernel_initializer='lecun_uniform'))
+model.add(Activation('tanh'))
 model.add(Dense(128, kernel_initializer='lecun_uniform'))
-model.add(Activation('relu'))
+model.add(Activation('tanh'))
 
 model.add(Dense(64, kernel_initializer='lecun_uniform'))
-model.add(Activation('relu'))
+model.add(Activation('tanh'))
 
-model.add(Dense(28, kernel_initializer='lecun_uniform'))
-model.add(Activation('relu'))
+model.add(Dense(32, kernel_initializer='lecun_uniform'))
+model.add(Activation('tanh'))
 
 model.add(Dense(10, kernel_initializer='he_normal')) # last layer
 model.add(Activation('softmax'))
@@ -126,22 +131,22 @@ model.compile(optimizer='sgd',
 # Train Model
 history = model.fit(np.array(trainingSetImages), np.array(trainingSetLabels), 
                     validation_data = (np.array(validationSetImages), np.array(validationSetLabels)), 
-                    epochs=60, 
-                    batch_size=256)
+                    epochs=100, 
+                    batch_size=128)
 
 
 # Report Results
 
 print(history.history)
 
-# TODO: Convert this to a confusion matrix and print it
 np.set_printoptions(precision=3)
 np.set_printoptions(suppress=True)
 np.set_printoptions(threshold=np.nan)
-prediction = model.predict(np.array(testSetImages), batch_size=256)
+prediction = model.predict(np.array(testSetImages), batch_size=512)
 
 # Construct the confusion matrix
 index = 0;
+correctCount = 0;
 confusionMatrix = np.zeros(shape=[10, 10])
 for row in prediction:
 	max = 0;
@@ -154,7 +159,10 @@ for row in prediction:
 		columnIndex += 1
 	realVal = testSetLabels[index]
 	confusionMatrix[maxIndex, getIntFromLabelArray(realVal)] += 1
+	if maxIndex == getIntFromLabelArray(realVal):
+		correctCount += 1
 	index += 1
+print("Accuracy: " + str(correctCount / index))
 print("ANN CONFUSION MATRIX:")
 print(confusionMatrix)
 
