@@ -7,6 +7,7 @@ IMAGE_SIZE = 28
 # -----------------------------------------------------------
 # define feature extraction functions
 
+
 def average_intensity(image):
     """Returns the average pixel density of the input image"""
     return np.average(image)
@@ -40,7 +41,7 @@ def detect_horizontal_line(image, line_length=18):
     return max_value
 
 
-def enclosed_space(image, threshold = 100):
+def enclosed_space(image, threshold=100):
     """Calculate the number of pixels enclosed in an area of black"""
     # first reshape image back into a 2D array
     reshaped = np.reshape(image, [IMAGE_SIZE, IMAGE_SIZE])
@@ -59,7 +60,7 @@ def enclosed_space(image, threshold = 100):
             else:
                 crossed_boundary = True
             index += 1
-        # Traverse form teh rght
+        # Traverse form the right
         crossed_boundary = False
         index = 0
         for pixel in np.flip(row, 0):
@@ -108,9 +109,9 @@ def extract_features(images):
 
 
 # create classifier and fit to training data
-baseline_classifier = tree.DecisionTreeClassifier(criterion='entropy')
-tuned_classifier = tree.DecisionTreeClassifier(criterion='entropy', max_depth=9, min_samples_leaf=6)
-feature_extracted_classifier = tree.DecisionTreeClassifier(criterion='entropy')
+baseline_classifier = tree.DecisionTreeClassifier(criterion="entropy")
+tuned_classifier = tree.DecisionTreeClassifier(criterion="entropy", max_depth=9, min_samples_leaf=6)
+feature_extracted_classifier = tree.DecisionTreeClassifier(criterion="entropy")
 
 # -----------------------------------------------------------
 # Select the classifier to be used (comment out all but one)
