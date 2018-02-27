@@ -1,4 +1,3 @@
-
 from sklearn import tree
 import numpy as np
 import prepare_data
@@ -9,12 +8,21 @@ import prepare_data
  test_images, test_labels) = prepare_data.get_data()
 
 # create classifier and fit to training data
-classifier = tree.DecisionTreeClassifier(criterion='entropy')
+baseline_classifier = tree.DecisionTreeClassifier(criterion='entropy')
+tuned_classifier = tree.DecisionTreeClassifier(criterion='entropy', max_depth=9, min_samples_leaf=6)
+
+# -----------------------------------------------------------
+# Select the classifier to be used (comment out all but one)
+
+# classifier = baseline_classifier
+classifier = tuned_classifier
+
+# -----------------------------------------------------------
+
 classifier.fit(training_images, training_labels)
 
 # score with test data
 print("Decision Tree Score:", classifier.score(test_images, test_labels))
-
 
 np.set_printoptions(precision=3)
 np.set_printoptions(suppress=True)
@@ -34,5 +42,3 @@ for i in range(len(prediction)):
 print("Accuracy: " + str(num_correct / len(prediction)))
 print("DECISION TREE CONFUSION MATRIX:")
 print(confusion_matrix)
-
-
